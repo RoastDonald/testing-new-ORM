@@ -1,0 +1,36 @@
+version: '3.2'
+
+services:
+  mysql:
+    ports:
+      - '3307:3306'
+    container_name: crud-mysql
+    image: mysql:8.0
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DB=uni
+    volumes:
+      - type: bind
+        source: './config'
+        target: '/uni.sql'
+    networks:
+      - app-network
+  crud:
+    container_name: crud-server
+    ports:
+      - '8081:8080'
+    build:
+      context: .
+    image: roastdonald/crud-server
+    depends_on:
+      - mysql
+    environment:
+      - NAME=root
+      - PASSWORD=root
+      - DATABASE=uni
+      - HOST=dir_db_1
+    networks:
+      - app-network
+networks:
+  app-network:
